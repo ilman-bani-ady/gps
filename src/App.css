@@ -1,0 +1,264 @@
+/* Reset dan gaya dasar */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #272829 !important;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.d-flex {
+  flex: 1;
+}
+
+.row.flex-nowrap {
+  height: 100%;
+}
+
+main {
+  padding: 20px;
+}
+
+/* Header */
+.app-header {
+  background-color: #111;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 60px; /* Match this with the sidebar's top padding */
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logo a {
+  color: #f1f1f1;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* If you decide to add user info, you can style it like this */
+.user-info {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Main content */
+main {
+  flex: 1;
+  padding: 2rem;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 1rem;
+  border-radius: 5px;
+}
+
+/* Footer */
+.app-footer {
+  background-color: #34495e;
+  color: #ecf0f1;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+/* Tombol umum */
+button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+/* Form styles */
+form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+  }
+  
+  main {
+    margin: 0;
+    border-radius: 0;
+  }
+}
+
+/* The sidebar menu */
+.sidebar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: black;
+  overflow-x: hidden;
+  padding-top: 60px;
+  transition: 0.5s;
+}
+
+/* The sidebar links */
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+/* Mouse over the navigation links, to change their color */
+.sidebar a:hover {
+  color: green;
+}
+
+/* Position and style the close button at top right corner */
+.sidebar .closebtn {
+  position: absolute;
+  top: 60px; /* Match this with the header height */
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* The button used to open the sidebar */
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  margin-right: 15px;
+}
+
+.openbtn:hover {
+  background-color: #444;
+}
+
+/* Style page content - pushes the page content to the right when the sidebar is opened */
+#main {
+  transition: margin-left 0.5s;
+  padding: 20px;
+  padding-top: 60px; /* Match this with the header height */
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the side-nav */
+@media screen and (max-height: 450px) {
+  .sidebar {
+    padding-top: 15px;
+  }
+  .sidebar a {
+    font-size: 18px;
+  }
+}
+
+/* Add this to your existing sidebar styles */
+.sidebar .sign-out-btn {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: left;
+  color: #818181;
+}
+
+.sidebar .sign-out-btn:hover {
+  color: #f1f1f1;
+}
+
+.home-page {
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.map-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Adjust the main content area to accommodate the full-screen map */
+#main {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Ensure the sidebar appears above the map */
+.sidebar {
+  z-index: 1000;
+}
+
+/* Style the open sidebar button to appear above the map */
+.openbtn {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
