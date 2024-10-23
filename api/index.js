@@ -30,7 +30,7 @@ app.get('/history/:vehicle_id', async (req, res) => {
 
 // Konfigurasi IP dan Port
 const PORT = process.env.PORT || 3001;
-const HOST = process.env.HOST || '103.245.39.79';
+const HOST = process.env.HOST || '  ';
 
 // Menjalankan server
 app.listen(PORT, HOST, () => {
