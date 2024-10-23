@@ -39,6 +39,7 @@ function AppContent() {
             <Route path="/" element={<HomePage />} />
             <Route path="/vehicles" element={<VehicleListPage />} />
             <Route path="/calculations" element={<VehicleCalculationPage />} />
+            <Route path="/add-vehicle" element={<AddVehiclePage />} />
           </Routes>
         </main>
       </div>
