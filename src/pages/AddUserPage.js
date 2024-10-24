@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { addUser } from '../services/api';
+import { addUser } from '../services/api.js';
 
 function AddUserPage() {
   const [username, setUsername] = useState('');
