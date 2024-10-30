@@ -24,7 +24,7 @@ def on_prev():
 
 def set_status(text):
     status_label.config(text=f"Status: {text}")
-    # footer_status_label.config(text=text)
+    footer_status_label.config(text=text)
 
 def on_melayani_click():
     set_status("Layanan Aktif")
@@ -119,8 +119,8 @@ footer.pack(side="bottom", fill="x")
 footer_rute_label = tk.Label(footer, text="Rute: Jak.001", bg="green", fg="white", font=("Arial", 16))
 footer_rute_label.place(x=root.winfo_width(), y=10)
 
-# footer_status_label = tk.Label(footer, text="Layanan Aktif", bg="green", fg="white", font=("Arial", 16))
-# footer_status_label.pack(side="right", padx=20)
+footer_status_label = tk.Label(footer, text="Layanan Aktif", bg="green", fg="white", font=("Arial", 16))
+footer_status_label.pack(side="right", padx=20)
 
 # Tombol dan Navigasi
 button_row = tk.Frame(root)
@@ -129,16 +129,19 @@ button_row.pack(side="bottom", fill="x", pady=10)
 button_group = tk.Frame(button_row)
 button_group.pack(side="left", padx=20)
 
-melayani_button = tk.Button(button_group, text="Melayani", bg="green", fg="white", font=("Arial", 16), command=on_melayani_click)
+# Mengatur ukuran tombol
+button_width = 15
+
+melayani_button = tk.Button(button_group, text="Melayani", bg="green", fg="white", font=("Arial", 16), width=button_width, command=on_melayani_click)
 melayani_button.grid(row=0, column=0, padx=5, pady=2)
 
-not_serving_button = tk.Button(button_group, text="Tidak Melayani", bg="orange", fg="white", font=("Arial", 16), command=on_not_serving_click)
+not_serving_button = tk.Button(button_group, text="Tidak Melayani", bg="orange", fg="white", font=("Arial", 16), width=button_width, command=on_not_serving_click)
 not_serving_button.grid(row=1, column=0, padx=5, pady=2)
 
-red_button = tk.Button(button_group, text="Penuh", bg="red", fg="white", font=("Arial", 16), command=on_red_button_click)
+red_button = tk.Button(button_group, text="Penuh", bg="red", fg="white", font=("Arial", 16), width=button_width, command=on_red_button_click)
 red_button.grid(row=0, column=1, padx=5, pady=2)
 
-isi_bbm_button = tk.Button(button_group, text="Isi BBM", bg="blue", fg="white", font=("Arial", 16), command=on_isi_bbm_click)
+isi_bbm_button = tk.Button(button_group, text="Isi BBM", bg="blue", fg="white", font=("Arial", 16), width=button_width, command=on_isi_bbm_click)
 isi_bbm_button.grid(row=1, column=1, padx=5, pady=2)
 
 nav_button_frame = tk.Frame(button_row)
