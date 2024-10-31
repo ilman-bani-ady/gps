@@ -2,7 +2,13 @@ import tkinter as tk
 import time
 
 # List rute
-rute_list = ["Jak.001", "Jak.002", "Jak.003", "Jak.004", "Jak.005"]
+rute_list = [
+             "JAK.01-R01	TANJUNG PRIOK - PLUMPANG",
+             "JAK.01-R02	PLUMPANG - TANJUNG PRIOK",
+             "JAK.02-R04	DUREN SAWIT - KAMPUNG MELAYU",
+             "JAK.02-R02	DUREN SAWIT - KAMPUNG MELAYU"
+             
+             ]
 current_rute_index = 0
 is_not_serving = False  # Status 'Tidak Melayani'
 is_blinking = False      # Status berkedip teks 'Penuh'
@@ -24,7 +30,7 @@ def on_prev():
 
 def set_status(text):
     status_label.config(text=f"Status: {text}")
-    footer_status_label.config(text=text)
+    # footer_status_label.config(text=text)
 
 def on_melayani_click():
     set_status("Layanan Aktif")
@@ -97,30 +103,30 @@ gps_status_label.pack(pady=10)
 body_frame = tk.Frame(root, bg="white")
 body_frame.pack(expand=True, fill="both", padx=20, pady=10)
 
-tk.Label(body_frame, text="Nama Pramudi:", bg="white", font=("Arial", 16), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="Speed:", bg="white", font=("Arial", 16), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="No Body:", bg="white", font=("Arial", 16), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="Device ID:", bg="white", font=("Arial", 16), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="No GSM:", bg="white", font=("Arial", 16), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="Nama Pramudi:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="Speed:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="No Body:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="Device ID:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="No GSM:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
 
-rute_label = tk.Label(body_frame, text="Rute: ", bg="white", font=("Arial", 16), anchor="w")
+rute_label = tk.Label(body_frame, text="Rute: ", bg="white", font=("Arial", 20), anchor="w")
 rute_label.pack(anchor="w")
 
-status_label = tk.Label(body_frame, text="Status: Layanan Aktif", bg="white", font=("Arial", 16), anchor="w")
+status_label = tk.Label(body_frame, text="Status: Layanan Aktif", bg="white", font=("Arial", 20), anchor="w")
 status_label.pack(anchor="w")
 
 # Label untuk 'Penuh'
-penuh_label = tk.Label(body_frame, text="", bg="white", fg="red", font=("Arial", 16), anchor="w")
+penuh_label = tk.Label(body_frame, text="", bg="white", fg="red", font=("Arial", 20), anchor="w")
 penuh_label.pack(anchor="w")
 
 # Footer
 footer = tk.Frame(root, bg="green", height=50)
 footer.pack(side="bottom", fill="x")
-footer_rute_label = tk.Label(footer, text="Rute: Jak.001", bg="green", fg="white", font=("Arial", 16))
+footer_rute_label = tk.Label(footer, text="Rute: Jak.001", bg="green", fg="white", font=("Arial", 22))
 footer_rute_label.place(x=root.winfo_width(), y=10)
 
-footer_status_label = tk.Label(footer, text="Layanan Aktif", bg="green", fg="white", font=("Arial", 16))
-footer_status_label.pack(side="right", padx=20)
+# footer_status_label = tk.Label(footer, text="Layanan Aktif", bg="green", fg="white", font=("Arial", 16))
+# footer_status_label.pack(side="right", padx=20)
 
 # Tombol dan Navigasi
 button_row = tk.Frame(root)
@@ -132,25 +138,25 @@ button_group.pack(side="left", padx=20)
 # Mengatur ukuran tombol
 button_width = 15
 
-melayani_button = tk.Button(button_group, text="Melayani", bg="green", fg="white", font=("Arial", 16), width=button_width, command=on_melayani_click)
+melayani_button = tk.Button(button_group, text="Melayani", bg="green", fg="white", font=("Arial", 22), width=button_width, command=on_melayani_click)
 melayani_button.grid(row=0, column=0, padx=5, pady=2)
 
-not_serving_button = tk.Button(button_group, text="Tidak Melayani", bg="orange", fg="white", font=("Arial", 16), width=button_width, command=on_not_serving_click)
+not_serving_button = tk.Button(button_group, text="Tidak Melayani", bg="orange", fg="white", font=("Arial", 22), width=button_width, command=on_not_serving_click)
 not_serving_button.grid(row=1, column=0, padx=5, pady=2)
 
-red_button = tk.Button(button_group, text="Penuh", bg="red", fg="white", font=("Arial", 16), width=button_width, command=on_red_button_click)
+red_button = tk.Button(button_group, text="Penuh", bg="red", fg="white", font=("Arial", 22), width=button_width, command=on_red_button_click)
 red_button.grid(row=0, column=1, padx=5, pady=2)
 
-isi_bbm_button = tk.Button(button_group, text="Isi BBM", bg="blue", fg="white", font=("Arial", 16), width=button_width, command=on_isi_bbm_click)
+isi_bbm_button = tk.Button(button_group, text="Isi BBM", bg="blue", fg="white", font=("Arial", 22), width=button_width, command=on_isi_bbm_click)
 isi_bbm_button.grid(row=1, column=1, padx=5, pady=2)
 
 nav_button_frame = tk.Frame(button_row)
 nav_button_frame.pack(side="right", padx=20)
 
-prev_button = tk.Button(nav_button_frame, text="Prev", bg="yellow", font=("Arial", 16), command=on_prev)
+prev_button = tk.Button(nav_button_frame, text="Prev", bg="yellow", font=("Arial", 23), command=on_prev)
 prev_button.pack(side="left", padx=5)
 
-next_button = tk.Button(nav_button_frame, text="Next", bg="yellow", font=("Arial", 16), command=on_next)
+next_button = tk.Button(nav_button_frame, text="Next", bg="yellow", font=("Arial", 23), command=on_next)
 next_button.pack(side="left", padx=5)
 
 # Memulai Animasi dan Pembaruan
