@@ -89,9 +89,31 @@ header.pack(side="top", fill="x")
 header_content = tk.Frame(header, bg="blue")
 header_content.pack(side="top", fill="x", pady=10)
 
-tk.Label(header_content, text="[Logo Kiri]", bg="blue", fg="white", font=("Arial", 16)).pack(side="left", padx=20)
+# Load logo left images
+left_logo = tk.PhotoImage(file="/root/tesis/gps/mqtt/assets/lego.png")  # Using forward slashes
+
+# Increase subsample values to make the logo smaller (e.g., 4,4 or 6,6)
+left_logo = left_logo.subsample(14, 14)  # Try different values to get desired size
+
+# Replace text labels with image labels
+tk.Label(header_content, image=left_logo, bg="blue").pack(side="left", padx=10)  # Reduced padding
 tk.Label(header_content, text="Hello World Header", bg="blue", fg="white", font=("Arial", 24)).pack(side="left", expand=True)
-tk.Label(header_content, text="[Logo Kanan]", bg="blue", fg="white", font=("Arial", 16)).pack(side="right", padx=20)
+
+# Important: Keep a reference to prevent garbage collection
+root.left_logo = left_logo
+
+# Load logo right images
+right_logo = tk.PhotoImage(file="/root/tesis/gps/mqtt/assets/lego.png")  # Using forward slashes
+
+# Increase subsample values to make the logo smaller (e.g., 4,4 or 6,6)
+right_logo = right_logo.subsample(14, 14)  # Try different values to get desired size
+
+# Replace text labels with image labels
+tk.Label(header_content, image=right_logo, bg="blue").pack(side="right", padx=10)  # Reduced padding
+
+# Important: Keep a reference to prevent garbage collection
+root.right_logo = right_logo
+
 
 # Status GPS dan Waktu
 status_frame = tk.Frame(root, bg="lightgray")
@@ -103,11 +125,11 @@ gps_status_label.pack(pady=10)
 body_frame = tk.Frame(root, bg="white")
 body_frame.pack(expand=True, fill="both", padx=20, pady=10)
 
-tk.Label(body_frame, text="Nama Pramudi:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="Speed:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="No Body:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="Device ID:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="No GSM:", bg="white", font=("Arial", 20), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="Nama Pramudi:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="Speed:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="No Body:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="Device ID:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="No GSM:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
 
 rute_label = tk.Label(body_frame, text="Rute: ", bg="white", font=("Arial", 20), anchor="w")
 rute_label.pack(anchor="w")
