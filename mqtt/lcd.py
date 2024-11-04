@@ -109,12 +109,25 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     
     return distance
 
+def read_current_location():
+    try:
+        with open('/root/tesis/gps/mqtt/assets/current_location.txt', 'r') as file:
+            lon, lat = file.read().strip().split(',')
+            return float(lon), float(lat)
+    except Exception as e:
+        print(f"Error reading location: {e}")
+        return None, None
+
 def update_status():
-    global route_data  # Add this line to access the global variable
+    global route_data
     current_time = time.strftime("%H:%M:%S")
-    gps_latitude = "-6.225440"  # Replace with actual GPS data
-    gps_longitude = "106.856170"  # Replace with actual GPS data
-    connection_status = "Connected"
+    
+    # Read GPS coordinates from file
+    gps_longitude, gps_latitude = read_current_location()
+    if gps_longitude is None or gps_latitude is None:
+        connection_status = "Disconnected"
+    else:
+        connection_status = "Connected"
     
     # Update GPS status
     gps_status_label.config(
@@ -122,20 +135,15 @@ def update_status():
     )
     
     # Check for nearby locations
-    try:
-        current_lat = float(gps_latitude)
-        current_lon = float(gps_longitude)
-        
+    if gps_latitude and gps_longitude:
         for location in route_data:
-            distance = calculate_distance(current_lat, current_lon, 
+            distance = calculate_distance(gps_latitude, gps_longitude, 
                                        location['lat'], location['lon'])
             
             # If within 50 meters of a location
             if distance <= 50:
                 footer_rute_label.config(text=f"Lokasi: {location['name']}")
                 break
-    except ValueError:
-        pass  # Handle invalid GPS data
     
     root.after(1000, update_status)
 
