@@ -140,12 +140,27 @@ def update_status():
             distance = calculate_distance(gps_latitude, gps_longitude, 
                                        location['lat'], location['lon'])
             
-            # If within 50 meters of a location
-            if distance <= 50:
-                footer_rute_label.config(text=f"Lokasi: {location['name']}")
+            # If within 30 meters of a location
+            if distance <= 30:
+                footer_rute_label.config(text=f"Lokasi: {location['name']} | Jarak: {distance:.1f}m")
+                print(f"Near {location['name']}: {distance:.1f}m")  # Debug info
                 break
+            else:
+                footer_rute_label.config(text="Sedang Dalam Perjalanan")
     
     root.after(1000, update_status)
+
+def read_device_id():
+    try:
+        with open('/root/tesis/gps/mqtt/assets/bustrack.txt', 'r') as file:
+            for line in file:
+                if line.startswith('DEVICEID='):
+                    device_id = line.split('=')[1].strip()
+                    return device_id
+        return "N/A"  # Return N/A if DEVICEID line not found
+    except Exception as e:
+        print(f"Error reading device ID: {e}")
+        return "N/A"
 
 # Window Utama
 root = tk.Tk()
@@ -195,12 +210,14 @@ gps_status_label.pack(pady=10)
 body_frame = tk.Frame(root, bg="white")
 body_frame.pack(expand=True, fill="both", padx=20, pady=10)
 
-tk.Label(body_frame, text="Nama Pramudi:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="Speed:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="No Body:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="Device ID:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
-tk.Label(body_frame, text="No GSM:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
 
+tk.Label(body_frame, text="No Body:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
+#tk.Label(body_frame, text="Nama Pramudi:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
+device_id_label = tk.Label(body_frame, text=f"Device ID: {read_device_id()}", 
+                          bg="white", font=("Arial", 18), anchor="w")
+device_id_label.pack(anchor="w")
+tk.Label(body_frame, text="No GSM:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
+tk.Label(body_frame, text="Speed:", bg="white", font=("Arial", 18), anchor="w").pack(anchor="w")
 rute_label = tk.Label(body_frame, text="Rute: ", bg="white", font=("Arial", 20), anchor="w")
 rute_label.pack(anchor="w")
 
