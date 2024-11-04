@@ -1,7 +1,5 @@
 import tkinter as tk
 import time
-import csv
-from math import radians, sin, cos, sqrt, atan2
 
 # List rute
 rute_list = [
@@ -14,9 +12,6 @@ rute_list = [
 current_rute_index = 0
 is_not_serving = False  # Status 'Tidak Melayani'
 is_blinking = False      # Status berkedip teks 'Penuh'
-
-# Add at the top of the file with other global variables
-route_data = []  # Initialize empty list
 
 def update_rute():
     selected_rute = rute_list[current_rute_index]
@@ -72,71 +67,14 @@ def move_footer_text():
         footer_rute_label.place(x=current_x - 2, y=10)
     root.after(50, move_footer_text)
 
-def load_route_data(filename):
-    route_data = []
-    with open(filename, 'r') as file:
-        # Skip header line if it exists
-        next(file, None)  # This skips the first line
-        
-        for line in file:
-            if line.strip():  # Skip empty lines
-                try:
-                    parts = line.strip().split(',')
-                    route_data.append({
-                        'route': parts[0],
-                        'lon': float(parts[1]),
-                        'lat': float(parts[2]),
-                        'code': parts[3],
-                        'name': parts[4],
-                        'sound': parts[5]
-                    })
-                except (ValueError, IndexError) as e:
-                    print(f"Skipping invalid line: {line.strip()}")
-                    continue
-    return route_data
-
-def calculate_distance(lat1, lon1, lat2, lon2):
-    R = 6371  # Earth's radius in kilometers
-    
-    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-    
-    dlat = lat2 - lat1
-    dlon = lon2 - lon1
-    
-    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1-a))
-    distance = R * c * 1000  # Convert to meters
-    
-    return distance
-
 def update_status():
-    global route_data  # Add this line to access the global variable
     current_time = time.strftime("%H:%M:%S")
-    gps_latitude = "-6.225440"  # Replace with actual GPS data
-    gps_longitude = "106.856170"  # Replace with actual GPS data
+    gps_latitude = "12.345678"
+    gps_longitude = "98.765432"
     connection_status = "Connected"
-    
-    # Update GPS status
     gps_status_label.config(
         text=f"Jam: {current_time} | GPS Lat: {gps_latitude} | GPS Lon: {gps_longitude} | Status: {connection_status}"
     )
-    
-    # Check for nearby locations
-    try:
-        current_lat = float(gps_latitude)
-        current_lon = float(gps_longitude)
-        
-        for location in route_data:
-            distance = calculate_distance(current_lat, current_lon, 
-                                       location['lat'], location['lon'])
-            
-            # If within 50 meters of a location
-            if distance <= 50:
-                footer_rute_label.config(text=f"Lokasi: {location['name']}")
-                break
-    except ValueError:
-        pass  # Handle invalid GPS data
-    
     root.after(1000, update_status)
 
 # Window Utama
@@ -243,12 +181,9 @@ prev_button.pack(side="left", padx=5)
 next_button = tk.Button(nav_button_frame, text="Next", bg="yellow", font=("Arial", 23), command=on_next)
 next_button.pack(side="left", padx=5)
 
-# Memulai Animasi dan Pembaruanx``
+# Memulai Animasi dan Pembaruan
 move_footer_text()
 update_status()
 update_rute()
-
-# Before root.mainloop(), load the route data
-route_data = load_route_data('/root/tesis/gps/mqtt/assets/stopseq.txt')
 
 root.mainloop()
