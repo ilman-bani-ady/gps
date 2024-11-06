@@ -37,24 +37,31 @@ async def send_location():
 
     while True:
         try:
-            # Replace this with your actual GPS data collection
+            #Jakarta coordinates with small random variations
             location_data = {
-                "latitude": -6.225187 + random.uniform(-0.01, 0.01),
-                "longitude": 106.855056 + random.uniform(-0.01, 0.01),
-                "timestamp": time.time()
+                "latitude": -6.2186324 + random.uniform(-0.01, 0.01),
+                "longitude": 106.7563842 + random.uniform(-0.01, 0.01),
+                "timestamp": int(time.time())
             }
+            # location_data = {
+            #     "latitude": -6.1124019 + random.uniform(-0.01, 0.01),
+            #     "longitude": 106.8298494 + random.uniform(-0.01, 0.01),
+            #     "timestamp": int(time.time())
+            # }
+            
+            
+            
             
             # Convert to JSON and publish
             message = json.dumps(location_data)
             client.publish(MQTT_TOPIC, message)
             print(f"Published: {message}")
             
-            # Wait before sending next update
-            await asyncio.sleep(5)  # Send update every 5 seconds
+            await asyncio.sleep(2)  # Send update every 2 seconds
             
         except Exception as e:
             print(f"Error sending location: {e}")
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)
 
 async def main():
     await send_location()

@@ -10,6 +10,7 @@ import Sidebar from './components/Layout/Sidebar';
 import Footer from './components/Layout/Footer';
 import './App.css';
 
+
 function AppContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
