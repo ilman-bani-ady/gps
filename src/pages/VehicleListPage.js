@@ -1,44 +1,93 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
-import '../styles/VehicleStyles.css';
+import toast from 'react-hot-toast';
 
 function VehicleListPage() {
-  // Assume you have a list of vehicles stored in state or fetched from an API
-  const vehicles = [
-    // Your vehicle data here
-  ];
+  const [devices, setDevices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchDevices();
+  }, []);
+
+  const fetchDevices = async () => {
+    try {
+      const response = await axios.get('http://localhost:3013/api/devices');
+      console.log('API Response:', response.data);
+      setDevices(response.data.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching devices:', err);
+      toast.error(err.message || 'Failed to fetch devices');
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (deviceId) => {
+    if (window.confirm('Are you sure you want to delete this device?')) {
+      try {
+        await axios.delete(`http://localhost:3013/api/devices/${deviceId}`);
+        toast.success('Device deleted successfully!');
+        fetchDevices();
+      } catch (err) {
+        toast.error(err.message || 'Failed to delete device');
+        setError(err.message);
+      }
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="vehicle-list-page">
-      <h1>Vehicle Management</h1>
-      <Link to="/add-vehicle" className="btn btn-primary mb-3">
+      <h1>Vehicle List</h1>
+      <Link to="/add-device" className="btn btn-primary mb-3">
         Add New Vehicle
       </Link>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Model</th>
-            <th>Year</th>
-            <th>License Plate</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {vehicles.map(vehicle => (
-            <tr key={vehicle.id}>
-              <td>{vehicle.name}</td>
-              <td>{vehicle.model}</td>
-              <td>{vehicle.year}</td>
-              <td>{vehicle.licensePlate}</td>
-              <td>
-                <button className="btn btn-sm btn-info mr-2">Edit</button>
-                <button className="btn btn-sm btn-danger">Delete</button>
-              </td>
+      
+      {devices.length === 0 ? (
+        <p>No vehicles found</p>
+      ) : (
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th>Device ID</th>
+              <th>Device Name</th>
+              <th>Phone Number</th>
+              <th>Registration Number</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {devices.map((device) => (
+              <tr key={device.device_id}>
+                <td>{device.device_id}</td>
+                <td>{device.device_name}</td>
+                <td>{device.phone_number}</td>
+                <td>{device.reg_no}</td>
+                <td>
+                  <Link 
+                    to={`/edit-device/${device.device_id}`} 
+                    className="btn btn-sm btn-info me-2"
+                  >
+                    Edit
+                  </Link>
+                  <button 
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(device.device_id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

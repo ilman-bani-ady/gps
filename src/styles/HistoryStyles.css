@@ -1,0 +1,48 @@
+.history-page {
+    padding: 20px;
+  }
+  
+  .filters {
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
+  
+  .map-container {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 4px;
+    background: #f8f9fa;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2em;
+  }
+  
+  .error {
+    color: red;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .btn-info {
+    color: #fff;
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+  }
+  
+  .btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+  }
+  
+  /* Leaflet map container styles */
+  .leaflet-container {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }

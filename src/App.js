@@ -5,10 +5,15 @@ import AddUserPage from './pages/AddUserPage';
 import HomePage from './pages/HomePage';
 import VehicleListPage from './pages/VehicleListPage';
 import VehicleCalculationPage from './pages/VehicleCalculationPage';
+import EditDevicePage from './pages/EditDevicePage';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import Footer from './components/Layout/Footer';
 import './App.css';
+import { Toaster } from 'react-hot-toast';
+import AddVehicleForm from './pages/AddVehicleForm';
+import AddVehiclePage from './pages/AddVehicleForm';
+import HistoryPage from './pages/HistoryPage';
 
 
 function AppContent() {
@@ -40,7 +45,9 @@ function AppContent() {
             <Route path="/" element={<HomePage />} />
             <Route path="/vehicles" element={<VehicleListPage />} />
             <Route path="/calculations" element={<VehicleCalculationPage />} />
-            {/* <Route path="/add-vehicle" element={<AddVehiclePage />} /> */}
+            <Route path="/edit-device/:deviceId" element={<EditDevicePage />} />
+            <Route path="/add-device" element={<AddVehiclePage />} />
+            <Route path="/history" element={<HistoryPage />} />
           </Routes>
         </main>
       </div>
@@ -51,9 +58,12 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <>
+      <Router>
+        <AppContent />
+      </Router>
+      <Toaster position="top-right" />
+    </>
   );
 }
 

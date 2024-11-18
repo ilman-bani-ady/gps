@@ -57,7 +57,7 @@ async def send_location():
             client.publish(MQTT_TOPIC, message)
             print(f"Published: {message}")
             
-            await asyncio.sleep(2)  # Send update every 2 seconds
+            await asyncio.sleep(1)  # Send update every 2 seconds
             
         except Exception as e:
             print(f"Error sending location: {e}")

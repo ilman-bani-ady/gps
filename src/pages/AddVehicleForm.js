@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import '../styles/VehicleStyles.css';
 
 function AddVehiclePage() {
   const [vehicle, setVehicle] = useState({
-    name: '',
-    type: '',
-    plateNumber: '',
-    status: 'active'
+    device_id: '',
+    device_name: '',
+    phone_number: '',
+    reg_no: ''
   });
 
   const navigate = useNavigate();
@@ -20,12 +22,24 @@ function AddVehiclePage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend API
-    console.log('New vehicle:', vehicle);
-    // After adding, navigate back to the vehicle list
-    navigate('/vehicles');
+    try {
+      // Menyiapkan data sesuai format API
+      const deviceData = {
+        device_id: vehicle.device_id,
+        device_name: vehicle.device_name,
+        phone_number: vehicle.phone_number,
+        reg_no: vehicle.reg_no
+      };
+
+      await axios.post('http://localhost:3013/api/devices', deviceData);
+      toast.success('Vehicle added successfully!');
+      navigate('/vehicles');
+    } catch (err) {
+      console.error('Error adding vehicle:', err);
+      toast.error(err.message || 'Failed to add vehicle');
+    }
   };
 
   return (
@@ -33,61 +47,71 @@ function AddVehiclePage() {
       <h1>Add New Vehicle</h1>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="name">Vehicle Name</label>
+          <label htmlFor="device_id">Device ID</label>
           <input
             type="text"
             className="form-control"
-            id="name"
-            name="name"
-            value={vehicle.name}
+            id="device_id"
+            name="device_id"
+            value={vehicle.device_id}
             onChange={handleChange}
             required
           />
         </div>
+
         <div className="form-group">
-          <label htmlFor="type">Vehicle Type</label>
-          <select
-            className="form-control"
-            id="type"
-            name="type"
-            value={vehicle.type}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select a type</option>
-            <option value="car">Car</option>
-            <option value="truck">Truck</option>
-            <option value="van">Van</option>
-            <option value="motorcycle">Motorcycle</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="plateNumber">Plate Number</label>
+          <label htmlFor="device_name">Device Name</label>
           <input
             type="text"
             className="form-control"
-            id="plateNumber"
-            name="plateNumber"
-            value={vehicle.plateNumber}
+            id="device_name"
+            name="device_name"
+            value={vehicle.device_name}
             onChange={handleChange}
             required
           />
         </div>
+
         <div className="form-group">
-          <label htmlFor="status">Status</label>
-          <select
+          <label htmlFor="phone_number">Phone Number</label>
+          <input
+            type="text"
             className="form-control"
-            id="status"
-            name="status"
-            value={vehicle.status}
+            id="phone_number"
+            name="phone_number"
+            value={vehicle.phone_number}
             onChange={handleChange}
-          >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="maintenance">Maintenance</option>
-          </select>
+            required
+            pattern="[0-9]{10,13}"
+            title="Phone number should be between 10 to 13 digits"
+          />
         </div>
-        <button type="submit" className="btn btn-primary">Add Vehicle</button>
+
+        <div className="form-group">
+          <label htmlFor="reg_no">Plat NO</label>
+          <input
+            type="text"
+            className="form-control"
+            id="reg_no"
+            name="reg_no"
+            value={vehicle.reg_no}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-actions">
+          <button type="submit" className="btn btn-primary me-2">
+            Add Vehicle
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-secondary"
+            onClick={() => navigate('/vehicles')}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -238,8 +238,9 @@ th {
 }
 
 .map-container {
-  height: 100%;
   width: 100%;
+  height: 100vh;
+  position: relative;
 }
 
 /* Adjust the main content area to accommodate the full-screen map */
@@ -262,3 +263,4 @@ th {
   left: 10px;
   z-index: 1000;
 }
+

@@ -10,14 +10,6 @@ function Map() {
     // Jakarta coordinates
     const jakartaCoords = [-6.2088, 106.8456];
 
-    // Daftar lokasi yang ingin ditampilkan
-    const locations = [
-      { coords: [-6.1751, 106.8650], name: 'Ancol' },
-      { coords: [-6.1754, 106.8272], name: 'Monas' },
-      { coords: [-6.3022, 106.8149], name: 'Ragunan' },
-      { coords: [-6.2919, 106.7892], name: 'Blok M' },
-    ];
-
     // Initialize the map
     const map = L.map(mapRef.current, {
       center: jakartaCoords,
@@ -47,12 +39,6 @@ function Map() {
         fillOpacity: 0.1
       }
     }).addTo(map);
-
-    // Menambahkan marker untuk setiap lokasi
-    locations.forEach(location => {
-      L.marker(location.coords).addTo(map)
-        .bindPopup(location.name);
-    });
 
     // Add a marker for Jakarta city center
     L.marker(jakartaCoords).addTo(map)

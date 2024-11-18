@@ -23,6 +23,7 @@ function Sidebar({ isOpen, closeNav }) {
       <Link to="/">Home</Link>
       <Link to="/vehicles">Vehicles</Link>
       <Link to="/calculations">Calculations</Link>
+      <Link to="/history">History</Link>
       <Link to="/add-user">Add User</Link>
       <a href="#" onClick={handleSignOut} className="sign-out-btn">Sign Out</a>
     </div>
