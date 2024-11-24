@@ -1,87 +1,76 @@
 import serial
 import time
-import sys
 
-# Menyesuaikan port serial sesuai dengan Raspberry Pi Anda
-port = '/dev/ttyAMA0'  # Gantilah dengan port yang sesuai
-baudrate = 9600  # Sesuaikan dengan baud rate modem SIMCOM 808
-timeout = 2  # Timeout untuk membaca respon
+def setup_serial(port="/dev/ttyAMA0", baudrate=9600):
+    """Mengatur koneksi serial ke modul SIM808."""
+    ser = serial.Serial(
+        port=port,
+        baudrate=baudrate,
+        timeout=1,  # Timeout untuk membaca data
+    )
+    if ser.isOpen():
+        print(f"Koneksi serial dibuka pada {port} dengan baud rate {baudrate}")
+    return ser
 
-# Membuka koneksi serial
-ser = serial.Serial(port, baudrate, timeout=timeout)
+def send_at_command(ser, command, delay=1):
+    """Mengirim perintah AT dan membaca respons."""
+    ser.write((command + "\r\n").encode())  # Kirim perintah dengan terminasi \r\n
+    time.sleep(delay)  # Tunggu respons
+    response = ser.readlines()
+    return [line.decode().strip() for line in response]
 
-# Fungsi untuk mengirim perintah AT dan membaca respon
-def send_at_command(command, delay=1):
-    try:
-        print(f"Kirim perintah: {command}")
-        ser.write((command + '\r\n').encode())  # Mengirimkan perintah AT
-        time.sleep(delay)  # Menunggu respon
-        response = ser.read(ser.in_waiting).decode()  # Membaca respon dari modem
-        return response
-    except serial.SerialException as e:
-        print(f"Error komunikasi serial: {e}")
+def get_location(ser):
+    """Mengambil data lokasi menggunakan AT+CGNSINF."""
+    # Pastikan GNSS diaktifkan
+    print("Mengaktifkan GNSS...")
+    response = send_at_command(ser, "AT+CGNSPWR=1")
+    if "OK" not in response:
+        print("Gagal mengaktifkan GNSS")
         return None
 
-# Fungsi untuk memparsing respon GPS
-def parse_gps_response(response):
+    time.sleep(2)  # Tunggu GNSS untuk mulai mendapatkan data
+
+    # Ambil informasi lokasi
+    print("Mengambil data lokasi...")
+    response = send_at_command(ser, "AT+CGNSINF", delay=2)
+    for line in response:
+        if "+CGNSINF" in line:
+            data = line.split(",")
+            if data[1] == "1":  # Pastikan GNSS aktif
+                latitude = data[3]
+                longitude = data[4]
+                print(f"Lokasi ditemukan: Latitude={latitude}, Longitude={longitude}")
+                return latitude, longitude
+            else:
+                print("GNSS tidak aktif atau belum mendapatkan lokasi.")
+    return None
+
+def main():
+    # Port serial tergantung perangkat Anda
+    port = "/dev/ttyAMA0"
+    baudrate = 9600
+    
     try:
-        parts = response.split(',')
-        latitude = parts[2]
-        longitude = parts[3]
-        return latitude, longitude
-    except IndexError:
-        return None, None
-
-# Inisialisasi GPS
-def initialize_gps():
-    commands = [
-        'AT',                    # Test komunikasi
-        'AT+CGPSPWR=1',         # Nyalakan GPS
-        'AT+CGPSRST=0',         # Reset GPS dalam mode hot start
-        'AT+CGPSSTATUS?'        # Cek status GPS
-    ]
-    
-    for cmd in commands:
-        response = send_at_command(cmd, delay=2)
-        print(f"Response: {response}")
-        if response and "ERROR" in response:
-            print(f"Gagal menginisialisasi GPS pada command: {cmd}")
-            return False
-    return True
-
-# Loop untuk mendapatkan lokasi GPS setiap 3 detik
-try:
-    # Verifikasi port terbuka
-    if not ser.is_open:
-        ser.open()
-    
-    # Inisialisasi GPS terlebih dahulu
-    if not initialize_gps():
-        print("Gagal menginisialisasi GPS")
-        sys.exit(1)
+        ser = setup_serial(port, baudrate)
         
-    while True:
-        response = send_at_command('AT+CGPSINFO')
-        
-        if response is None:
-            print("Gagal berkomunikasi dengan modem. Mencoba ulang dalam 3 detik...")
-            time.sleep(3)
-            continue
+        # Tes komunikasi
+        print("Mengirimkan perintah AT untuk tes koneksi...")
+        response = send_at_command(ser, "AT")
+        print("\n".join(response))
 
-        latitude, longitude = parse_gps_response(response)
-
-        if latitude and longitude:
-            print(f"Latitude: {latitude}, Longitude: {longitude}")
+        # Dapatkan lokasi GPS
+        location = get_location(ser)
+        if location:
+            print(f"Lokasi: Latitude={location[0]}, Longitude={location[1]}")
         else:
-            print("GPS tidak ditemukan atau tidak valid.")
+            print("Gagal mendapatkan lokasi.")
+    
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        if ser and ser.isOpen():
+            ser.close()
+            print("Koneksi serial ditutup.")
 
-        # Tunggu 3 detik sebelum mengulangi
-        time.sleep(3)
-
-except serial.SerialException as e:
-    print(f"Error pada port serial: {e}")
-except KeyboardInterrupt:
-    print("Pengambilan data dihentikan.")
-finally:
-    if ser.is_open:
-        ser.close()
+if __name__ == "__main__":
+    main()
