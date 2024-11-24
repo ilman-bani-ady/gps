@@ -8,14 +8,15 @@
   }
   
   .map-container {
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     padding: 15px;
     border-radius: 4px;
-    background: #f8f9fa;
+    background: #1e1e1e;
+    margin-bottom: 20px;
   }
   
   .table-responsive {
-    overflow-x: auto;
+    overflow-x: auto; 
   }
   
   .loading {
@@ -46,3 +47,34 @@
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
+  
+  #historyMap {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* Leaflet specific styles */
+  .leaflet-popup-content {
+    margin: 10px;
+  }
+  
+  .leaflet-popup-content b {
+    display: inline-block;
+    width: 80px;
+  }
+  
+  .leaflet-popup-content h6 {
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+  }
+  
+  .leaflet-popup-content p {
+    margin: 5px 0;
+    color: #666;
+  }
+  
+  .leaflet-popup-content strong {
+    color: #333;
+  }
+                                                                                                                                                                                                                                                 

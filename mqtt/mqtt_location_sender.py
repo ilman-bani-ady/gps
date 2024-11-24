@@ -7,6 +7,7 @@ import random
 # MQTT Configuration
 MQTT_BROKER = "localhost"
 MQTT_PORT = 1883
+#MQTT_PORT = 8083
 MQTT_TOPIC = "gps/location"
 
 # GMQTT client setup
@@ -32,32 +33,37 @@ client.on_disconnect = on_disconnect
 client.on_subscribe = on_subscribe
 
 async def send_location():
-    # Connect to broker
     await client.connect(MQTT_BROKER, MQTT_PORT)
 
     while True:
         try:
-            #Jakarta coordinates with small random variations
-            location_data = {
-                "latitude": -6.2186324 + random.uniform(-0.01, 0.01),
-                "longitude": 106.7563842 + random.uniform(-0.01, 0.01),
-                "timestamp": int(time.time())
-            }
-            # location_data = {
-            #     "latitude": -6.1124019 + random.uniform(-0.01, 0.01),
-            #     "longitude": 106.8298494 + random.uniform(-0.01, 0.01),
-            #     "timestamp": int(time.time())
-            # }
+            # Simulate different vehicles
+            devices = [
+                {
+                    "device_id": "DEV001",
+                    "latitude": -6.2186324 + random.uniform(-0.01, 0.01),
+                    "longitude": 106.7563842 + random.uniform(-0.01, 0.01),
+                },
+                {
+                    "device_id": "DEV002",
+                    "latitude": -6.1924019 + random.uniform(-0.01, 0.01),
+                    "longitude": 106.8398494 + random.uniform(-0.01, 0.01),
+                }
+            ]
             
+            for device in devices:
+                location_data = {
+                    "device_id": device["device_id"],
+                    "latitude": device["latitude"],
+                    "longitude": device["longitude"],
+                    "timestamp": int(time.time())
+                }
+                
+                message = json.dumps(location_data)
+                client.publish(MQTT_TOPIC, message)
+                print(f"Published: {message}")
             
-            
-            
-            # Convert to JSON and publish
-            message = json.dumps(location_data)
-            client.publish(MQTT_TOPIC, message)
-            print(f"Published: {message}")
-            
-            await asyncio.sleep(1)  # Send update every 2 seconds
+            await asyncio.sleep(2)  # Update every 2 seconds
             
         except Exception as e:
             print(f"Error sending location: {e}")
