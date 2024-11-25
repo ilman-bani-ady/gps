@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-broker = "103.245.39.79"
+broker = "ip server"
 port = 1883
 topic = "test/topic"
 def on_connect(client, userdata, flags, rc):
