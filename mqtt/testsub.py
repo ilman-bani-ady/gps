@@ -27,7 +27,7 @@ async def main():
     client.on_disconnect = on_disconnect
     
     # Connect to the MQTT broker (using default localhost:1883)
-    await client.connect('localhost')
+    await client.connect('l103.245.39.79')
     
     try:
         while True:
