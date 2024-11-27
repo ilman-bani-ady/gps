@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 
 const options = {
-    host: 'ip server',
+    host: '103.245.39.79',
     port: 1883, // Port default MQTT
     clientId: `mqtt_listener_${Math.random().toString(16).slice(2, 8)}`,
 };
@@ -12,7 +12,7 @@ client.on('connect', () => {
     console.log('MQTT listener connected to the server.');
 
     // Subscribe ke topik tertentu
-    client.subscribe('gps/location', (error) => {
+    client.subscribe('bus/location', (error) => {
         if (error) {
             console.error('Failed to subscribe:', error.message);
         } else {

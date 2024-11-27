@@ -3,6 +3,9 @@ import time
 import csv
 from math import radians, sin, cos, sqrt, atan2
 from tkinter import messagebox
+from gmqtt import Client as MQTTClient
+import asyncio
+import uuid
 
 # List rute
 rute_list = [
@@ -21,6 +24,55 @@ route_data = []  # Initialize empty list
 
 # Tambahkan variabel password
 EXIT_PASSWORD = "666"  # Ganti dengan password yang diinginkan
+
+# Add these constants near the top of the file with other global variables
+MQTT_BROKER = "103.245.39.79"  # Replace with your MQTT broker
+MQTT_PORT = 1883
+MQTT_TOPIC = "bus/location"  # Topic for publishing location data
+MQTT_CLIENT_ID = f'lcd-{uuid.uuid4().hex}'  # Generate unique client ID
+
+# Add MQTT client setup
+mqtt_client = None
+
+# Add this global variable near the top with other globals
+current_latitude = -6.179767
+current_longitude = 106.934196
+
+async def setup_mqtt():
+    global mqtt_client
+    
+    mqtt_client = MQTTClient(MQTT_CLIENT_ID)
+    
+    # Connect to the broker
+    await mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
+    print(f"Connected to MQTT broker at {MQTT_BROKER}")
+
+def publish_location():
+    global current_latitude, current_longitude
+    
+    if mqtt_client and mqtt_client.is_connected:
+        # For testing, using dummy location
+        dummy_location = {
+            "device_id": read_device_id(),
+            "latitude": current_latitude,
+            "longitude": current_longitude,
+            "timestamp": time.time()
+        }
+        
+        # Publish to MQTT topic
+        mqtt_client.publish(MQTT_TOPIC, str(dummy_location))
+        
+        # Update the GPS status label with current coordinates
+        update_gps_display()
+    
+    # Schedule next publication
+    root.after(5000, publish_location)  # Publish every 5 seconds
+
+def update_gps_display():
+    current_time = time.strftime("%H:%M:%S")
+    gps_status_label.config(
+        text=f"Jam: {current_time} | GPS Lat: {current_latitude:.6f} | GPS Lon: {current_longitude:.6f} | Status: Connected"
+    )
 
 # Buat class NumericKeypad
 class NumericKeypad(tk.Toplevel):
@@ -372,5 +424,11 @@ update_rute()
 
 # Before root.mainloop(), load the route data
 route_data = load_route_data('/home/pi/gps/mqtt/assets/stopseq.txt')
+
+# Setup MQTT connection
+asyncio.get_event_loop().run_until_complete(setup_mqtt())
+
+# Start publishing location
+publish_location()
 
 root.mainloop()
