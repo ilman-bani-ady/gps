@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 
 const options = {
-    host: '103.245.39.79',
+    host: 'ip server',
     port: 1883, // Port default MQTT
     clientId: `mqtt_listener_${Math.random().toString(16).slice(2, 8)}`,
 };

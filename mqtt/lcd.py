@@ -26,7 +26,7 @@ route_data = []  # Initialize empty list
 EXIT_PASSWORD = "666"  # Ganti dengan password yang diinginkan
 
 # Add these constants near the top of the file with other global variables
-MQTT_BROKER = "103.245.39.79"  # Replace with your MQTT broker
+MQTT_BROKER = "ip server"  # Replace with your MQTT broker
 MQTT_PORT = 1883
 MQTT_TOPIC = "bus/location"  # Topic for publishing location data
 MQTT_CLIENT_ID = f'lcd-{uuid.uuid4().hex}'  # Generate unique client ID
