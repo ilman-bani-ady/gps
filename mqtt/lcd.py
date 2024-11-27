@@ -2,6 +2,7 @@ import tkinter as tk
 import time
 import csv
 from math import radians, sin, cos, sqrt, atan2
+from tkinter import messagebox
 
 # List rute
 rute_list = [
@@ -17,6 +18,65 @@ is_blinking = False      # Status berkedip teks 'Penuh'
 
 # Add at the top of the file with other global variables
 route_data = []  # Initialize empty list
+
+# Tambahkan variabel password
+EXIT_PASSWORD = "666"  # Ganti dengan password yang diinginkan
+
+# Buat class NumericKeypad
+class NumericKeypad(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+        self.result = ""
+        
+        # Konfigurasi window popup
+        self.title("Enter Password")
+        self.geometry("300x400")
+        self.configure(bg='gray')
+        
+        # Entry widget untuk menampilkan input
+        self.display = tk.Entry(self, show="*", font=('Arial', 20), justify='center')
+        self.display.pack(pady=10, padx=10, fill='x')
+        
+        # Frame untuk tombol
+        button_frame = tk.Frame(self, bg='gray')
+        button_frame.pack(expand=True, fill='both', padx=10, pady=10)
+        
+        # Buat grid 3x4 untuk tombol
+        buttons = [
+            '7', '8', '9',
+            '4', '5', '6',
+            '1', '2', '3',
+            'C', '0', '⏎'
+        ]
+        
+        row = 0
+        col = 0
+        for button in buttons:
+            cmd = lambda x=button: self.click(x)
+            btn = tk.Button(button_frame, text=button, font=('Arial', 18),
+                          width=4, height=2, command=cmd)
+            btn.grid(row=row, column=col, padx=5, pady=5)
+            col += 1
+            if col > 2:
+                col = 0
+                row += 1
+    
+    def click(self, key):
+        if key == 'C':
+            self.result = ""
+            self.display.delete(0, tk.END)
+        elif key == '⏎':
+            if self.result == EXIT_PASSWORD:
+                self.parent.quit()
+            else:
+                messagebox.showerror("Error", "Wrong Password!")
+                self.result = ""
+                self.display.delete(0, tk.END)
+        else:
+            self.result += key
+            self.display.delete(0, tk.END)
+            self.display.insert(0, self.result)
 
 def update_rute():
     selected_rute = rute_list[current_rute_index]
@@ -111,7 +171,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 
 def read_current_location():
     try:
-        with open('/root/tesis/gps/mqtt/assets/current_location.txt', 'r') as file:
+        with open('/home/pi/gps/mqtt/assets/current_location.txt', 'r') as file:
             lon, lat = file.read().strip().split(',')
             return float(lon), float(lat)
     except Exception as e:
@@ -152,7 +212,7 @@ def update_status():
 
 def read_device_id():
     try:
-        with open('/root/tesis/gps/mqtt/assets/bustrack.txt', 'r') as file:
+        with open('/home/pi/gps/mqtt/assets/bustrack.txt', 'r') as file:
             for line in file:
                 if line.startswith('DEVICEID='):
                     device_id = line.split('=')[1].strip()
@@ -165,8 +225,45 @@ def read_device_id():
 # Window Utama
 root = tk.Tk()
 root.title("Hello World GUI")
-root.geometry("1024x600")
+root.attributes('-fullscreen', True)
 root.resizable(False, False)
+
+# Variabel untuk menghitung klik
+click_count = 0
+last_click_time = 0
+
+# Fungsi untuk menangani klik di pojok kiri atas
+def handle_click(event):
+    global click_count, last_click_time
+    current_time = time.time()
+    
+    # Cek apakah klik berada di area pojok kiri atas (50x50 pixel)
+    if event.x <= 50 and event.y <= 50:
+        # Reset counter jika waktu antara klik terlalu lama (lebih dari 1 detik)
+        if current_time - last_click_time > 1:
+            click_count = 1
+        else:
+            click_count += 1
+        
+        # Tampilkan keypad jika sudah 3 klik
+        if click_count >= 3:
+            NumericKeypad(root)
+            click_count = 0  # Reset click count
+            
+        last_click_time = current_time
+
+# Bind event klik ke seluruh window
+root.bind('<Button-1>', handle_click)
+
+# Optional: Tambahkan handler untuk tombol Escape jika ingin keluar dari fullscreen
+def toggle_fullscreen(event=None):
+    root.attributes("-fullscreen", not root.attributes("-fullscreen"))
+
+def end_fullscreen(event=None):
+    root.attributes("-fullscreen", False)
+
+# Bind tombol Escape untuk keluar dari fullscreen
+root.bind('<Escape>', end_fullscreen)
 
 # Header dan Logo
 header = tk.Frame(root, bg="blue", height=50)
@@ -175,29 +272,29 @@ header_content = tk.Frame(header, bg="blue")
 header_content.pack(side="top", fill="x", pady=10)
 
 # Load logo left images
-left_logo = tk.PhotoImage(file="/root/tesis/gps/mqtt/assets/lego.png")  # Using forward slashes
+##left_logo = tk.PhotoImage(file=" /home/pi/gps/mqtt/assets/lego.png")  # Using forward slashes
 
 # Increase subsample values to make the logo smaller (e.g., 4,4 or 6,6)
-left_logo = left_logo.subsample(14, 14)  # Try different values to get desired size
+##left_logo = left_logo.subsample(14, 14)  # Try different values to get desired size
 
 # Replace text labels with image labels
-tk.Label(header_content, image=left_logo, bg="blue").pack(side="left", padx=10)  # Reduced padding
+##tk.Label(header_content, image=left_logo, bg="blue").pack(side="left", padx=10)  # Reduced padding
 tk.Label(header_content, text="Hello World Header", bg="blue", fg="white", font=("Arial", 24)).pack(side="left", expand=True)
 
 # Important: Keep a reference to prevent garbage collection
-root.left_logo = left_logo
+##root.left_logo = left_logo
 
 # Load logo right images
-right_logo = tk.PhotoImage(file="/root/tesis/gps/mqtt/assets/lego.png")  # Using forward slashes
+##right_logo = tk.PhotoImage(file="/home/pi/gps/mqtt/assets/lego.png")  # Using forward slashes
 
 # Increase subsample values to make the logo smaller (e.g., 4,4 or 6,6)
-right_logo = right_logo.subsample(14, 14)  # Try different values to get desired size
+##right_logo = right_logo.subsample(14, 14)  # Try different values to get desired size
 
 # Replace text labels with image labels
-tk.Label(header_content, image=right_logo, bg="blue").pack(side="right", padx=10)  # Reduced padding
+##tk.Label(header_content, image=right_logo, bg="blue").pack(side="right", padx=10)  # Reduced padding
 
 # Important: Keep a reference to prevent garbage collection
-root.right_logo = right_logo
+##root.right_logo = right_logo
 
 
 # Status GPS dan Waktu
@@ -274,6 +371,6 @@ update_status()
 update_rute()
 
 # Before root.mainloop(), load the route data
-route_data = load_route_data('/root/tesis/gps/mqtt/assets/stopseq.txt')
+route_data = load_route_data('/home/pi/gps/mqtt/assets/stopseq.txt')
 
 root.mainloop()
