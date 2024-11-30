@@ -5,7 +5,7 @@ import time
 import random
 
 # MQTT Configuration
-MQTT_BROKER = "localhost"
+MQTT_BROKER = "127.0.0.1"
 MQTT_PORT = 1883
 #MQTT_PORT = 8083
 MQTT_TOPIC = "gps/location"

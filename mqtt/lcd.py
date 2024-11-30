@@ -6,6 +6,7 @@ from tkinter import messagebox
 from gmqtt import Client as MQTTClient
 import asyncio
 import uuid
+import serial
 
 # List rute
 rute_list = [
@@ -26,7 +27,7 @@ route_data = []  # Initialize empty list
 EXIT_PASSWORD = "666"  # Ganti dengan password yang diinginkan
 
 # Add these constants near the top of the file with other global variables
-MQTT_BROKER = "ip server"  # Replace with your MQTT broker
+MQTT_BROKER = "103.245.39.79"  # Replace with your MQTT broker
 MQTT_PORT = 1883
 MQTT_TOPIC = "bus/location"  # Topic for publishing location data
 MQTT_CLIENT_ID = f'lcd-{uuid.uuid4().hex}'  # Generate unique client ID
@@ -37,6 +38,58 @@ mqtt_client = None
 # Add this global variable near the top with other globals
 current_latitude = -6.179767
 current_longitude = 106.934196
+
+# Konfigurasi Serial untuk GPRS Modem
+ser = serial.Serial(
+    port='/dev/ttyAMA0',
+    baudrate=9600,
+    timeout=1,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS
+)
+
+# Add near the top with other global variables
+gsm_connection_status = False
+
+def initialize_gsm_connection():
+    global gsm_connection_status
+    try:
+        print("Starting GSM initialization...", flush=True)  # Debug start
+        
+        # Clear any existing data in the buffer
+        ser.reset_input_buffer()
+        ser.reset_output_buffer()
+        
+        # Send AT Command to check TCP connection
+        command = b'AT+CIPSTART="TCP","103.245.39.79","80"\r\n'
+        ser.write(command)
+        print(f"Sending AT Command: {command.decode()}", flush=True)
+        
+        # Give more time for modem to respond
+        time.sleep(2)
+        
+        # Read response
+        response = ""
+        while ser.in_waiting:
+            response += ser.read().decode('utf-8', errors='ignore')
+        
+        print(f"AT Command Response: {response}", flush=True)  # Print the full response
+        
+        # Check response (case insensitive)
+        if any(success.lower() in response.lower() for success in ["CONNECT OK", "ALREADY CONNECT"]):
+            print("GSM Status: Connection successful!", flush=True)
+            gsm_connection_status = True
+            time.sleep(2)
+        else:
+            print("GSM Status: Connection failed!", flush=True)
+            gsm_connection_status = False
+            
+    except Exception as e:
+        print(f"GPRS Connection Error: {e}", flush=True)
+        gsm_connection_status = False
+    
+    print(f"Final GSM status: {gsm_connection_status}", flush=True)  # Final status debug
 
 async def setup_mqtt():
     global mqtt_client
@@ -70,9 +123,26 @@ def publish_location():
 
 def update_gps_display():
     current_time = time.strftime("%H:%M:%S")
-    gps_status_label.config(
-        text=f"Jam: {current_time} | GPS Lat: {current_latitude:.6f} | GPS Lon: {current_longitude:.6f} | Status: Connected"
-    )
+    
+    # Update main status text
+    main_text = f"Jam: {current_time} | Lat: {current_latitude:.6f} | Lon: {current_longitude:.6f} | Status: Connected | GSM: "
+    main_status_label.config(text=main_text)
+    
+    print(f"Current GSM status: {gsm_connection_status}")  # Debug print
+    
+    # Update GSM status with color based on stored status
+    if gsm_connection_status:
+        print("Setting status to Connected (Green)")  # Debug print
+        gsm_status_label.config(
+            text="Connected",
+            fg="green"
+        )
+    else:
+        print("Setting status to Not Connected (Red)")  # Debug print
+        gsm_status_label.config(
+            text="Not Connected",
+            fg="red"
+        )
 
 # Buat class NumericKeypad
 class NumericKeypad(tk.Toplevel):
@@ -242,8 +312,8 @@ def update_status():
         connection_status = "Connected"
     
     # Update GPS status
-    gps_status_label.config(
-        text=f"Jam: {current_time} | GPS Lat: {gps_latitude} | GPS Lon: {gps_longitude} | Status: {connection_status}"
+    main_status_label.config(
+        text=f"Jam: {current_time} | GPS Lat: {gps_latitude} | GPS Lon: {gps_longitude} | Status: {connection_status} | GSM: "
     )
     
     # Check for nearby locations
@@ -273,6 +343,35 @@ def read_device_id():
     except Exception as e:
         print(f"Error reading device ID: {e}")
         return "N/A"
+
+def check_gprs_connection():
+    try:
+        # Clear any existing data in the buffer
+        ser.reset_input_buffer()
+        
+        # Send AT Command to check TCP connection
+        ser.write(b'AT+CIPSTART="TCP","103.245.39.79","80"\r\n')
+        
+        # Wait for response with timeout
+        start_time = time.time()
+        response = ""
+        
+        while (time.time() - start_time) < 7:  # 7 second timeout
+            if ser.in_waiting:
+                response += ser.read_all().decode('utf-8', errors='ignore')
+                # Check for both successful connection responses
+                if any(success in response for success in ["CONNECT OK", "ALREADY CONNECT"]):
+                    return True
+                elif any(error in response for error in ["ERROR", "FAIL", "CLOSED"]):
+                    return False
+            time.sleep(0.1)
+        
+        # If we reach here, it means we timed out
+        return False
+        
+    except Exception as e:
+        print(f"GPRS Connection Error: {e}")
+        return False
 
 # Window Utama
 root = tk.Tk()
@@ -352,8 +451,12 @@ tk.Label(header_content, text="Hello World Header", bg="blue", fg="white", font=
 # Status GPS dan Waktu
 status_frame = tk.Frame(root, bg="lightgray")
 status_frame.pack(side="top", fill="x")
-gps_status_label = tk.Label(status_frame, text="", bg="lightgray", fg="black", font=("Arial", 16))
-gps_status_label.pack(pady=10)
+
+main_status_label = tk.Label(status_frame, text="", bg="lightgray", font=("Arial", 16))
+main_status_label.pack(side="left")
+
+gsm_status_label = tk.Label(status_frame, text="Not Connected", bg="lightgray", fg="red", font=("Arial", 16))
+gsm_status_label.pack(side="left")
 
 # Body
 body_frame = tk.Frame(root, bg="white")
@@ -430,5 +533,10 @@ asyncio.get_event_loop().run_until_complete(setup_mqtt())
 
 # Start publishing location
 publish_location()
+
+# Before root.mainloop()
+print("Initializing GSM connection...", flush=True)
+initialize_gsm_connection()
+print("GSM initialization complete", flush=True)
 
 root.mainloop()
